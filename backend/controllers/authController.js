@@ -1,0 +1,135 @@
+const User = require("../models/User");
+
+const bcrypt = require("bcrypt");
+
+const jwt = require("jsonwebtoken");
+
+exports.register = async (req, res) => {
+
+    try{
+
+        const {name,email,password,walletAddress} = req.body;
+
+        const exist = await User.findOne({email});
+
+        if(exist){
+
+            return res.status(400).json({
+                message:"Email already exists"
+            });
+
+        }
+
+        const hashedPassword = await bcrypt.hash(password,10);
+
+        const user = new User({
+
+            name,
+
+            email,
+
+            password:hashedPassword,
+
+            walletAddress
+
+        });
+
+        await user.save();
+
+        res.status(201).json({
+
+            success:true,
+
+            message:"User Created"
+
+        });
+
+    }
+
+    catch(err){
+
+        res.status(500).json({
+
+            success:false,
+
+            message:err.message
+
+        });
+
+    }
+
+};
+
+exports.login = async(req,res)=>{
+
+    try{
+
+        const {email,password}=req.body;
+
+        const user=await User.findOne({email});
+
+        if(!user){
+
+            return res.status(404).json({
+
+                message:"User not found"
+
+            });
+
+        }
+
+        const check=await bcrypt.compare(password,user.password);
+
+        if(!check){
+
+            return res.status(400).json({
+
+                message:"Wrong Password"
+
+            });
+
+        }
+
+        const token=jwt.sign(
+
+            {
+
+                id:user._id,
+
+                role:user.role
+
+            },
+
+            process.env.JWT_SECRET,
+
+            {
+
+                expiresIn:"1d"
+
+            }
+
+        );
+
+        res.json({
+
+            success:true,
+
+            token,
+
+            user
+
+        });
+
+    }
+
+    catch(err){
+
+        res.status(500).json({
+
+            message:err.message
+
+        });
+
+    }
+
+}
