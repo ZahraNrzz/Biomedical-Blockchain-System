@@ -109,6 +109,8 @@ Create a `.env` file:
 PORT=5000
 MONGODB_URI=mongodb://127.0.0.1:27017/biomedical
 JWT_SECRET=your_secret_key
+
+RPC_URL=http://127.0.0.1:8545
 PRIVATE_KEY=your_private_key
 CONTRACT_ADDRESS=your_contract_address
 ```
