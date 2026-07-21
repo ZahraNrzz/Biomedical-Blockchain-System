@@ -1,22 +1,18 @@
 const { ethers } = require("ethers");
 
 const provider = new ethers.JsonRpcProvider(
-    "http://127.0.0.1:8545"
+    process.env.RPC_URL
 );
-
-const privateKey = "your_private_key";
 
 const wallet = new ethers.Wallet(
-    privateKey,
+    process.env.PRIVATE_KEY,
     provider
 );
-
-const contractAddress = "your_contract_address";
 
 const contractJson = require("./DatasetRequest.json");
 
 const contract = new ethers.Contract(
-    contractAddress,
+    process.env.CONTRACT_ADDRESS,
     contractJson.abi,
     wallet
 );
